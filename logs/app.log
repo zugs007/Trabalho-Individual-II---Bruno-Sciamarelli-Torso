@@ -4,3 +4,8 @@
 [2026-11-09 16:33:41] [INFO] [IP: ::1] Login bem-sucedido: admin@pokelar.com (Perfil: admin)
 [2026-11-09 16:35:58] [INFO] [IP: ::1] Logout efetuado: admin@pokelar.com
 [2026-11-09 16:48:09] [INFO] [IP: ::1] Login bem-sucedido: admin@pokelar.com (Perfil: admin)
+[2026-11-09 22:43:00] [INFO] [IP: ::1] Logout efetuado: admin@pokelar.com
+[2026-11-09 22:45:38] [INFO] [IP: ::1] Login bem-sucedido: admin@pokelar.com (Perfil: admin)
+[2026-11-09 22:49:03] [INFO] [IP: ::1] Novo Pokémon cadastrado: Minun (ID: 7) por admin@pokelar.com
+[2026-11-09 22:50:06] [INFO] [IP: ::1] Pokémon editado: Minun (ID: 7) por admin@pokelar.com
+[2026-11-09 22:50:24] [WARNING] [IP: ::1] Pokémon removido: Minun (ID: 7) pelo admin admin@pokelar.com

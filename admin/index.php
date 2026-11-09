@@ -70,7 +70,7 @@ $pagina_atual = basename($_SERVER['PHP_SELF']);
                             Sessão ativa: <strong><?= htmlspecialchars($_SESSION['usuario_nome']) ?></strong> (<?= htmlspecialchars($_SESSION['usuario_perfil']) ?>)
                         </p>
                     </div>
-                    <a href="criar.php" class="btn-filtrar" style="text-decoration: none; padding: 12px 24px; font-weight: bold;">+ Cadastrar Novo Pokémon</a>
+                    <a href="create.php" class="btn-filtrar" style="text-decoration: none; padding: 12px 24px; font-weight: bold;">+ Cadastrar Novo Pokémon</a>
                 </div>
 
                 <div style="background: var(--fundo-card); border-radius: var(--raio-borda); box-shadow: var(--sombra-card); overflow-x: auto; border: 1px solid var(--borda-suave);">
@@ -109,8 +109,8 @@ $pagina_atual = basename($_SERVER['PHP_SELF']);
                                         <?php endif; ?>
                                     </td>
                                     <td style="padding: 16px; text-align: center;">
-                                        <a href="editar.php?id=<?= $poke['id'] ?>" style="color: #0284c7; text-decoration: none; font-weight: bold; margin-right: 15px;">Editar</a>
-                                        <a href="deletar.php?id=<?= $poke['id'] ?>" onclick="return confirm('Deseja realmente remover <?= htmlspecialchars($poke['nome']) ?>?');" style="color: #e53e3e; text-decoration: none; font-weight: bold;">Excluir</a>
+                                        <a href="update.php?id=<?= $poke['id'] ?>" style="color: #0284c7; text-decoration: none; font-weight: bold; margin-right: 15px;">Editar</a>
+                                        <a href="delete.php?id=<?= $poke['id'] ?>" onclick="return confirm('Deseja realmente remover <?= htmlspecialchars($poke['nome']) ?>?');" style="color: #e53e3e; text-decoration: none; font-weight: bold;">Excluir</a>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>

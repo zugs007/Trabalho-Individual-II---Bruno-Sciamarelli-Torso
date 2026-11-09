@@ -1,6 +1,27 @@
 <?php
 require_once 'config/database.php';
 
+$tipos_pokemon = [
+    'aco'       => 'Aço',
+    'agua'      => 'Água',
+    'bug'       => 'Inseto',
+    'dragao'    => 'Dragão',
+    'eletrico'  => 'Elétrico',
+    'fada'      => 'Fada',
+    'lutador'   => 'Lutador',
+    'fogo'      => 'Fogo',
+    'voador'    => 'Voador',
+    'fantasma'  => 'Fantasma',
+    'planta'    => 'Planta',
+    'terrestre' => 'Terrestre',
+    'gelo'      => 'Gelo',
+    'normal'    => 'Normal',
+    'veneno'    => 'Veneno',
+    'psiquico'  => 'Psíquico',
+    'pedra'     => 'Pedra',
+    'sombrio'   => 'Sombrio'
+];
+
 $pagina_atual = basename($_SERVER['PHP_SELF']);
 
 // Captura e sanitiza os filtros recebidos via GET
@@ -104,11 +125,11 @@ $pokemons = $stmt->fetchAll();
                             <label for="filtro-tipo">Tipo:</label>
                             <select id="filtro-tipo" name="tipo">
                                 <option value="">Todos os tipos</option>
-                                <option value="planta" <?= $filtro_tipo === 'planta' ? 'selected' : '' ?>>Planta</option>
-                                <option value="fogo" <?= $filtro_tipo === 'fogo' ? 'selected' : '' ?>>Fogo</option>
-                                <option value="agua" <?= $filtro_tipo === 'agua' ? 'selected' : '' ?>>Água</option>
-                                <option value="eletrico" <?= $filtro_tipo === 'eletrico' ? 'selected' : '' ?>>Elétrico</option>
-                                <option value="normal" <?= $filtro_tipo === 'normal' ? 'selected' : '' ?>>Normal</option>
+                                <?php foreach ($tipos_pokemon as $chave => $rotulo): ?>
+                                    <option value="<?= $chave ?>" <?= $filtro_tipo === $chave ? 'selected' : '' ?>>
+                                        <?= $rotulo ?>
+                                    </option>
+                                <?php endforeach; ?>
                             </select>
                         </div>
 
