@@ -9,3 +9,15 @@
 [2026-11-09 22:49:03] [INFO] [IP: ::1] Novo Pokémon cadastrado: Minun (ID: 7) por admin@pokelar.com
 [2026-11-09 22:50:06] [INFO] [IP: ::1] Pokémon editado: Minun (ID: 7) por admin@pokelar.com
 [2026-11-09 22:50:24] [WARNING] [IP: ::1] Pokémon removido: Minun (ID: 7) pelo admin admin@pokelar.com
+[2026-11-09 23:00:02] [INFO] [IP: ::1] Logout efetuado: admin@pokelar.com
+[2026-11-09 23:04:13] [INFO] [IP: ::1] Novo cadastro efetuado: bruno@email.com (Perfil: cliente)
+[2026-11-09 23:04:24] [INFO] [IP: ::1] Login bem-sucedido: bruno@email.com (Perfil: )
+[2026-11-09 23:17:01] [INFO] [IP: ::1] Logout efetuado: bruno@email.com
+[2026-11-09 23:18:17] [INFO] [IP: ::1] Login bem-sucedido: bruno@email.com (Perfil: )
+[2026-11-09 23:18:38] [INFO] [IP: ::1] Logout efetuado: bruno@email.com
+[2026-11-09 23:18:45] [INFO] [IP: ::1] Login bem-sucedido: admin@pokelar.com (Perfil: admin)
+[2026-11-09 23:18:48] [INFO] [IP: ::1] Logout efetuado: admin@pokelar.com
+[2026-11-09 23:22:30] [INFO] [IP: ::1] Login bem-sucedido: bruno@email.com (Perfil: )
+[2026-11-09 23:24:11] [INFO] [IP: ::1] Logout efetuado: bruno@email.com
+[2026-11-09 23:25:47] [INFO] [IP: ::1] Login bem-sucedido: bruno@email.com (Perfil: )
+[2026-11-09 23:25:52] [INFO] [IP: ::1] Solicitação de adoção efetuada: Pokémon Snorlax (#6) reservado pelo treinador bruno@email.com

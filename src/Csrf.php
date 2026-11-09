@@ -5,6 +5,7 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 class Csrf {
+    
     public static function generateToken() {
         if (empty($_SESSION['csrf_token'])) {
             $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
@@ -13,9 +14,9 @@ class Csrf {
     }
 
     public static function validateToken($token) {
-        if (isset($_SESSION['csrf_token']) && hash_equals($_SESSION['csrf_token'], $token)) {
-            return true;
+        if (empty($_SESSION['csrf_token']) || empty($token)) {
+            return false;
         }
-        return false;
+        return hash_equals($_SESSION['csrf_token'], $token);
     }
 }
