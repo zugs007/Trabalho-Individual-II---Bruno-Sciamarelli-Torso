@@ -23,30 +23,40 @@ $pagina_atual = basename($_SERVER['PHP_SELF']);
 <body>
 
     <!-- CABEÇALHO FIXO -->
-    <header id="cabeca">
-        <div id="cabeca-container">
-            <a href="../index.php" id="brand">
-                <h1>PokéLar</h1>
-            </a>
-            <nav id="nav" aria-label="Navegação Principal">
-                <a href="../index.php" class="nav-link">Início</a>
-                <a href="../pokemon.php" class="nav-link">Pokémon Disponíveis</a>
-                <a href="../como-adotar.php" class="nav-link">Como Adotar</a>
-                <a href="../sobre.php" class="nav-link">Sobre Nós</a>
-                <a href="index.php" class="nav-link nav-destaque ativo">Painel Admin</a>
-                <a href="../logout.php" class="nav-link" style="background-color: #dc3545; color: white;">Sair</a>
-            </nav>
-            <div id="contato-rapido">
-                <a href="https://wa.me/5511941984860" target="_blank" rel="noopener noreferrer" title="Falar no WhatsApp">(11) 94198-4860</a>
-            </div>
-        </div>
+<header id="cabeca">
+    <div id="cabeca-container">
+        <a href="../index.php" id="brand">
+            <h1>PokéLar</h1>
+        </a>
 
-        <div id="linha">
-            <button id="bola" onclick="alert('Área Administrativa do PokéLar!')" title="Clique para uma surpresa" type="button">
-                <img src="../img/botao_pokebola.png" alt="Pokébola Interativa" width="58" height="58">
-            </button>
+        <!-- NAVEGAÇÃO COMPLETA DO ADMIN -->
+        <nav id="nav" aria-label="Navegação Principal">
+            <!-- Links do Site Público (Usam ../ para voltar à raiz) -->
+            <a href="../index.php" class="nav-link">Início</a>
+            <a href="../pokemon.php" class="nav-link">Pokémon Disponíveis</a>
+            <a href="../como-adotar.php" class="nav-link">Como Adotar</a>
+            <a href="../sobre.php" class="nav-link">Sobre Nós</a>
+
+            <!-- Ferramentas do Admin (Dentro da pasta admin/) -->
+            <a href="index.php" class="nav-link <?= $pagina_atual === 'index.php' ? 'ativo' : '' ?> nav-destaque">
+                Painel Admin
+            </a>
+
+            <!-- Botão de Sair -->
+            <a href="../logout.php" class="nav-link" style="background-color: #dc3545; color: white;">Sair</a>
+        </nav>
+
+        <div id="contato-rapido">
+            <a href="https://wa.me/5511941984860" target="_blank" rel="noopener noreferrer" title="Falar no WhatsApp">(11) 94198-4860</a>
         </div>
-    </header>
+    </div>
+
+    <div id="linha">
+        <button id="bola" onclick="alert('Área Administrativa PokéLar')" title="Clique para uma surpresa" type="button">
+            <img src="../img/botao_pokebola.png" alt="Pokébola Interativa" width="58" height="58">
+        </button>
+    </div>
+</header>
 
     <!-- CONTEÚDO PRINCIPAL -->
     <main>
@@ -87,7 +97,16 @@ $pagina_atual = basename($_SERVER['PHP_SELF']);
                             Sessão ativa: <strong><?= htmlspecialchars($_SESSION['usuario_nome']) ?></strong> (<?= htmlspecialchars($_SESSION['usuario_perfil']) ?>)
                         </p>
                     </div>
-                    <a href="create.php" class="btn-filtrar" style="text-decoration: none; padding: 12px 24px; font-weight: bold;">+ Cadastrar Novo Pokémon</a>
+                    
+                    <!-- BOTÕES DE AÇÃO DO ADMIN -->
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <a href="adocoes.php" class="btn-filtrar" style="text-decoration: none; padding: 12px 20px; background: #0284c7; font-weight: bold;">
+                            📋 Gestão de Agendamentos
+                        </a>
+                        <a href="create.php" class="btn-filtrar" style="text-decoration: none; padding: 12px 20px; font-weight: bold;">
+                            + Cadastrar Novo Pokémon
+                        </a>
+                    </div>
                 </div>
 
                 <div style="background: var(--fundo-card); border-radius: var(--raio-borda); box-shadow: var(--sombra-card); overflow-x: auto; border: 1px solid var(--borda-suave);">

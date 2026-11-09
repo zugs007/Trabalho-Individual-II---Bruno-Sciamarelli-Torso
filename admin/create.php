@@ -31,49 +31,80 @@ $erro = '';
 $sucesso = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $token          = $_POST['csrf_token'] ?? '';
-    $nome           = trim($_POST['nome'] ?? '');
-    $tipo_primario  = trim($_POST['tipo_primario'] ?? '');
-    $tipo_secundario= trim($_POST['tipo_secundario'] ?? '');
-    $porte          = trim($_POST['porte'] ?? '');
-    $idade          = trim($_POST['idade'] ?? '');
-    $temperamento   = trim($_POST['temperamento'] ?? '');
-    $local_resgate  = trim($_POST['local_resgate'] ?? '');
-    $status         = trim($_POST['status'] ?? 'disponivel');
-    $imagem         = trim($_POST['imagem'] ?? 'img/default.png');
-    $alt_texto      = trim($_POST['alt_texto'] ?? '');
-    $descricao      = trim($_POST['descricao'] ?? '');
+    $token           = $_POST['csrf_token'] ?? '';
+    $nome            = trim($_POST['nome'] ?? '');
+    $tipo_primario   = trim($_POST['tipo_primario'] ?? '');
+    $tipo_secundario = trim($_POST['tipo_secundario'] ?? '');
+    $porte           = trim($_POST['porte'] ?? '');
+    $idade           = trim($_POST['idade'] ?? '');
+    $temperamento    = trim($_POST['temperamento'] ?? '');
+    $local_resgate   = trim($_POST['local_resgate'] ?? '');
+    $status          = trim($_POST['status'] ?? 'disponivel');
+    $alt_texto       = trim($_POST['alt_texto'] ?? '');
+    $descricao       = trim($_POST['descricao'] ?? '');
 
     if (!Csrf::validateToken($token)) {
         $erro = 'Erro de validação CSRF. Tente novamente.';
     } elseif (empty($nome) || empty($tipo_primario) || empty($porte) || empty($idade) || empty($local_resgate) || empty($descricao)) {
         $erro = 'Por favor, preencha todos os campos obrigatórios (*).';
+    } elseif (!isset($_FILES['imagem_arquivo']) || $_FILES['imagem_arquivo']['error'] !== UPLOAD_ERR_OK) {
+        $erro = 'Por favor, selecione um arquivo de imagem válido.';
     } else {
-        try {
-            $sql = "INSERT INTO pokemons (nome, tipo_primario, tipo_secundario, porte, idade, temperamento, local_resgate, status, imagem, alt_texto, descricao) 
-                    VALUES (:nome, :tipo_primario, :tipo_secundario, :porte, :idade, :temperamento, :local_resgate, :status, :imagem, :alt_texto, :descricao)";
-            
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute([
-                ':nome'           => $nome,
-                ':tipo_primario'  => $tipo_primario,
-                ':tipo_secundario'=> !empty($tipo_secundario) ? $tipo_secundario : null,
-                ':porte'          => $porte,
-                ':idade'          => $idade,
-                ':temperamento'   => $temperamento,
-                ':local_resgate'  => $local_resgate,
-                ':status'         => $status,
-                ':imagem'         => $imagem,
-                ':alt_texto'      => !empty($alt_texto) ? $alt_texto : "Imagem de " . $nome,
-                ':descricao'      => $descricao
-            ]);
+        // --- PROCESSAMENTO DO UPLOAD DE IMAGEM ---
+        $arquivo = $_FILES['imagem_arquivo'];
+        $extensao = strtolower(pathinfo($arquivo['name'], PATHINFO_EXTENSION));
+        $extensoesPermitidas = ['jpg', 'jpeg', 'png', 'webp'];
 
-            Logger::log("Novo Pokémon cadastrado: {$nome} (ID: " . $pdo->lastInsertId() . ") por " . $_SESSION['usuario_email'], "INFO");
-            header('Location: index.php?msg=cadastrado');
-            exit;
-        } catch (PDOException $e) {
-            Logger::log("Erro ao cadastrar Pokémon: " . $e->getMessage(), "ERROR");
-            $erro = "Erro no banco de dados ao salvar o registro.";
+        if (!in_array($extensao, $extensoesPermitidas, true)) {
+            $erro = 'Formato de imagem inválido. Aceitos apenas: JPG, JPEG, PNG e WEBP.';
+        } elseif ($arquivo['size'] > 3 * 1024 * 1024) { // Limite de 3MB
+            $erro = 'A imagem deve ter no máximo 3MB.';
+        } else {
+            // Gera um nome de arquivo único para não sobrescrever imagens com o mesmo nome
+            $novoNomeArquivo = uniqid('poke_', true) . '.' . $extensao;
+            
+            // Caminho onde o arquivo será salvo no servidor
+            $diretorioDestino = '../uploads/';
+            $caminhoServidor  = $diretorioDestino . $novoNomeArquivo;
+            
+            // Caminho que será salvo no banco de dados para ser exibido nas páginas públicas
+            $caminhoBancoData = 'uploads/' . $novoNomeArquivo;
+
+            // Cria o diretório de uploads se ainda não existir
+            if (!is_dir($diretorioDestino)) {
+                mkdir($diretorioDestino, 0755, true);
+            }
+
+            if (move_uploaded_file($arquivo['tmp_name'], $caminhoServidor)) {
+                try {
+                    $sql = "INSERT INTO pokemons (nome, tipo_primario, tipo_secundario, porte, idade, temperamento, local_resgate, status, imagem, alt_texto, descricao) 
+                            VALUES (:nome, :tipo_primario, :tipo_secundario, :porte, :idade, :temperamento, :local_resgate, :status, :imagem, :alt_texto, :descricao)";
+                    
+                    $stmt = $pdo->prepare($sql);
+                    $stmt->execute([
+                        ':nome'           => $nome,
+                        ':tipo_primario'  => $tipo_primario,
+                        ':tipo_secundario'=> !empty($tipo_secundario) ? $tipo_secundario : null,
+                        ':porte'          => $porte,
+                        ':idade'          => $idade,
+                        ':temperamento'   => $temperamento,
+                        ':local_resgate'  => $local_resgate,
+                        ':status'         => $status,
+                        ':imagem'         => $caminhoBancoData,
+                        ':alt_texto'      => !empty($alt_texto) ? $alt_texto : "Imagem de " . $nome,
+                        ':descricao'      => $descricao
+                    ]);
+
+                    Logger::log("Novo Pokémon cadastrado via upload: {$nome} (ID: " . $pdo->lastInsertId() . ") por " . $_SESSION['usuario_email'], "INFO");
+                    header('Location: index.php?msg=cadastrado');
+                    exit;
+                } catch (PDOException $e) {
+                    Logger::log("Erro ao cadastrar Pokémon: " . $e->getMessage(), "ERROR");
+                    $erro = "Erro no banco de dados ao salvar o registro.";
+                }
+            } else {
+                $erro = "Falha ao enviar o arquivo de imagem para o servidor.";
+            }
         }
     }
 }
@@ -88,20 +119,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <body>
 
-    <header id="cabeca">
-        <div id="cabeca-container">
-            <a href="../index.php" id="brand"><h1>PokéLar</h1></a>
-            <nav id="nav">
-                <a href="../index.php" class="nav-link">Início</a>
-                <a href="../pokemon.php" class="nav-link">Catálogo</a>
-                <a href="index.php" class="nav-link nav-destaque ativo">Painel Admin</a>
-                <a href="../logout.php" class="nav-link" style="background-color: #dc3545;">Sair</a>
-            </nav>
+<header id="cabeca">
+    <div id="cabeca-container">
+        <a href="../index.php" id="brand">
+            <h1>PokéLar</h1>
+        </a>
+
+        <!-- NAVEGAÇÃO COMPLETA DO ADMIN -->
+        <nav id="nav" aria-label="Navegação Principal">
+            <!-- Links do Site Público (Usam ../ para voltar à raiz) -->
+            <a href="../index.php" class="nav-link">Início</a>
+            <a href="../pokemon.php" class="nav-link">Pokémon Disponíveis</a>
+            <a href="../como-adotar.php" class="nav-link">Como Adotar</a>
+            <a href="../sobre.php" class="nav-link">Sobre Nós</a>
+
+            <!-- Ferramentas do Admin (Dentro da pasta admin/) -->
+            <a href="index.php" class="nav-link <?= $pagina_atual === 'index.php' ? 'ativo' : '' ?> nav-destaque">
+                Painel Admin
+            </a>
+
+            <!-- Botão de Sair -->
+            <a href="../logout.php" class="nav-link" style="background-color: #dc3545; color: white;">Sair</a>
+        </nav>
+
+        <div id="contato-rapido">
+            <a href="https://wa.me/5511941984860" target="_blank" rel="noopener noreferrer" title="Falar no WhatsApp">(11) 94198-4860</a>
         </div>
-        <div id="linha">
-            <button id="bola" type="button"><img src="../img/botao_pokebola.png" alt="Pokébola" width="58" height="58"></button>
-        </div>
-    </header>
+    </div>
+
+    <div id="linha">
+        <button id="bola" onclick="alert('Área Administrativa PokéLar')" title="Clique para uma surpresa" type="button">
+            <img src="../img/botao_pokebola.png" alt="Pokébola Interativa" width="58" height="58">
+        </button>
+    </div>
+</header>
+
 
     <main class="container py-5" style="max-width: 700px; margin: 40px auto;">
         <h2>Cadastrar Novo Pokémon</h2>
@@ -110,7 +162,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div style="background: #f8d7da; color: #721c24; padding: 12px; border-radius: 6px; margin-bottom: 20px;"><?= htmlspecialchars($erro) ?></div>
         <?php endif; ?>
 
-        <form action="create.php" method="post" class="painel-filtros" style="display: flex; flex-direction: column; gap: 15px;">
+        <!-- Note a presença de enctype="multipart/form-data" para permitir envio de arquivos -->
+        <form action="create.php" method="post" enctype="multipart/form-data" class="painel-filtros" style="display: flex; flex-direction: column; gap: 15px;">
             <input type="hidden" name="csrf_token" value="<?= Csrf::generateToken() ?>">
 
             <div class="campo-filtro">
@@ -173,9 +226,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <input type="text" id="local_resgate" name="local_resgate" required placeholder="Ex: Floresta de Viridian">
             </div>
 
+            <!-- CAMPO DE UPLOAD DE ARQUIVO -->
             <div class="campo-filtro">
-                <label for="imagem">Caminho da Imagem</label>
-                <input type="text" id="imagem" name="imagem" value="img/pikachu.png" placeholder="Ex: img/pikachu.png">
+                <label for="imagem_arquivo">Selecione a Imagem (PNG, JPG ou WEBP) *</label>
+                <input type="file" id="imagem_arquivo" name="imagem_arquivo" accept="image/*" required>
+            </div>
+
+            <div class="campo-filtro">
+                <label for="alt_texto">Texto Alternativo da Imagem (Acessibilidade)</label>
+                <input type="text" id="alt_texto" name="alt_texto" placeholder="Ex: Pikachu sorrindo na grama">
             </div>
 
             <div class="campo-filtro">

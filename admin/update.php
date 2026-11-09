@@ -107,19 +107,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <body>
 
-    <header id="cabeca">
-        <div id="cabeca-container">
-            <a href="../index.php" id="brand"><h1>PokéLar</h1></a>
-            <nav id="nav">
-                <a href="../index.php" class="nav-link">Início</a>
-                <a href="index.php" class="nav-link nav-destaque ativo">Painel Admin</a>
-                <a href="../logout.php" class="nav-link" style="background-color: #dc3545;">Sair</a>
-            </nav>
+<header id="cabeca">
+    <div id="cabeca-container">
+        <a href="../index.php" id="brand">
+            <h1>PokéLar</h1>
+        </a>
+
+        <!-- NAVEGAÇÃO COMPLETA DO ADMIN -->
+        <nav id="nav" aria-label="Navegação Principal">
+            <!-- Links do Site Público (Usam ../ para voltar à raiz) -->
+            <a href="../index.php" class="nav-link">Início</a>
+            <a href="../pokemon.php" class="nav-link">Pokémon Disponíveis</a>
+            <a href="../como-adotar.php" class="nav-link">Como Adotar</a>
+            <a href="../sobre.php" class="nav-link">Sobre Nós</a>
+
+            <!-- Ferramentas do Admin (Dentro da pasta admin/) -->
+            <a href="index.php" class="nav-link <?= $pagina_atual === 'index.php' ? 'ativo' : '' ?> nav-destaque">
+                Painel Admin
+            </a>
+
+            <!-- Botão de Sair -->
+            <a href="../logout.php" class="nav-link" style="background-color: #dc3545; color: white;">Sair</a>
+        </nav>
+
+        <div id="contato-rapido">
+            <a href="https://wa.me/5511941984860" target="_blank" rel="noopener noreferrer" title="Falar no WhatsApp">(11) 94198-4860</a>
         </div>
-        <div id="linha">
-            <button id="bola" type="button"><img src="../img/botao_pokebola.png" alt="Pokébola" width="58" height="58"></button>
-        </div>
-    </header>
+    </div>
+
+    <div id="linha">
+        <button id="bola" onclick="alert('Área Administrativa PokéLar')" title="Clique para uma surpresa" type="button">
+            <img src="../img/botao_pokebola.png" alt="Pokébola Interativa" width="58" height="58">
+        </button>
+    </div>
+</header>
+
 
     <main class="container py-5" style="max-width: 700px; margin: 40px auto;">
         <h2>Editar Pokémon #<?= $pokemon['id'] ?> (<?= htmlspecialchars($pokemon['nome']) ?>)</h2>
