@@ -26,9 +26,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (Auth::login($email, $senha, $pdo)) {
             // Se for Admin vai para o painel restrito, se for Usuário vai para o catálogo
             if (Auth::isAdmin()) {
-                header('Location: admin/index.php');
+                    header('Location: admin/index.php');
             } else {
-                header('Location: pokemon.php');
+                header('Location: minha-conta.php');
             }
             exit;
         } else {
@@ -161,7 +161,7 @@ if (isset($_GET['erro']) && $_GET['erro'] === 'acesso_negado') {
                     </form>
 
                     <div class="form-rodape-opcao">
-                        <p>Ainda não tem uma conta de treinador? <a href="#" class="link-destaque">Cadastre-se aqui</a></p>
+                        <p>Ainda não tem uma conta de treinador? <a href="cadastro.php" class="link-destaque">Cadastre-se aqui</a></p>
                     </div>
                 </div>
 

@@ -1,4 +1,5 @@
 <?php
+require_once 'src/Auth.php';
 $pagina_atual = basename($_SERVER['PHP_SELF']);
 ?>
 
@@ -24,12 +25,11 @@ $pagina_atual = basename($_SERVER['PHP_SELF']);
                 <a href="como-adotar.php" class="nav-link <?= $pagina_atual === 'como-adotar.php' ? 'ativo' : '' ?>">Como Adotar</a>
                 <a href="sobre.php" class="nav-link <?= $pagina_atual === 'sobre.php' ? 'ativo' : '' ?>">Sobre Nós</a>
 
-                <?php 
-                require_once 'src/Auth.php';
-                if (Auth::check()): 
-                ?>
+                <?php if (Auth::check()): ?>
                     <?php if (Auth::isAdmin()): ?>
                         <a href="admin/index.php" class="nav-link nav-destaque">Painel Admin</a>
+                    <?php else: ?>
+                        <a href="minha-conta.php" class="nav-link <?= $pagina_atual === 'minha-conta.php' ? 'ativo' : '' ?>">Minha Conta</a>
                     <?php endif; ?>
                     <a href="logout.php" class="nav-link" style="background-color: #dc3545; color: white;">Sair</a>
                 <?php else: ?>

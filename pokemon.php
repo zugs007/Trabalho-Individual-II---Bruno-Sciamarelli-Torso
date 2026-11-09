@@ -1,6 +1,14 @@
 <?php
 require_once 'config/database.php';
+require_once 'src/Auth.php';
+require_once 'src/Csrf.php';
 
+// Garante que a sessão está ativa
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Array de tipos oficiais de Pokémon
 $tipos_pokemon = [
     'aco'       => 'Aço',
     'agua'      => 'Água',
@@ -22,15 +30,13 @@ $tipos_pokemon = [
     'sombrio'   => 'Sombrio'
 ];
 
-$pagina_atual = basename($_SERVER['PHP_SELF']);
-
 // Captura e sanitiza os filtros recebidos via GET
 $busca_nome  = isset($_GET['nome']) ? trim($_GET['nome']) : '';
 $filtro_tipo  = isset($_GET['tipo']) ? trim($_GET['tipo']) : '';
 $filtro_porte = isset($_GET['porte']) ? trim($_GET['porte']) : '';
 
-// Construção da consulta SQL com Prepared Statements (Proteção Anti-SQL Injection)
-$sql = "SELECT * FROM pokemons WHERE status != 'adotado'";
+// Consulta SQL para buscar todos os Pokémon
+$sql = "SELECT * FROM pokemons WHERE 1=1";
 $params = [];
 
 if (!empty($busca_nome)) {
@@ -54,6 +60,8 @@ $sql .= " ORDER BY id DESC";
 $stmt = $pdo->prepare($sql);
 $stmt->execute($params);
 $pokemons = $stmt->fetchAll();
+
+$pagina_atual = basename($_SERVER['PHP_SELF']);
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -77,12 +85,11 @@ $pokemons = $stmt->fetchAll();
                 <a href="como-adotar.php" class="nav-link <?= $pagina_atual === 'como-adotar.php' ? 'ativo' : '' ?>">Como Adotar</a>
                 <a href="sobre.php" class="nav-link <?= $pagina_atual === 'sobre.php' ? 'ativo' : '' ?>">Sobre Nós</a>
 
-                <?php 
-                require_once 'src/Auth.php';
-                if (Auth::check()): 
-                ?>
+                <?php if (Auth::check()): ?>
                     <?php if (Auth::isAdmin()): ?>
                         <a href="admin/index.php" class="nav-link nav-destaque">Painel Admin</a>
+                    <?php else: ?>
+                        <a href="minha-conta.php" class="nav-link <?= $pagina_atual === 'minha-conta.php' ? 'ativo' : '' ?>">Minha Conta</a>
                     <?php endif; ?>
                     <a href="logout.php" class="nav-link" style="background-color: #dc3545; color: white;">Sair</a>
                 <?php else: ?>
@@ -113,7 +120,7 @@ $pokemons = $stmt->fetchAll();
         <div class="pagina-conteudo">
             <div class="container">
 
-                <!-- Formulário de Filtros -->
+                <!-- Painel de Filtros -->
                 <div class="painel-filtros mb-4">
                     <form action="pokemon.php" method="get" class="form-filtros" role="search">
                         <div class="campo-filtro">
@@ -147,7 +154,7 @@ $pokemons = $stmt->fetchAll();
                     </form>
                 </div>
 
-                <!-- Grade de Cards Renderizados Dinamicamente via PHP -->
+                <!-- Grade de Pokémon -->
                 <div class="grid-pokemon">
                     <?php if (count($pokemons) > 0): ?>
                         <?php foreach ($pokemons as $poke): ?>
@@ -155,10 +162,12 @@ $pokemons = $stmt->fetchAll();
                                 <div class="card-pokemon-imagem">
                                     <?php if ($poke['status'] === 'disponivel'): ?>
                                         <span class="badge-status disponivel">Disponível</span>
+                                    <?php elseif ($poke['status'] === 'em-processo'): ?>
+                                        <span class="badge-status em-processo">Em Análise</span>
                                     <?php else: ?>
-                                        <span class="badge-status em-processo">Em Adoção</span>
+                                        <span class="badge-status" style="background-color: #6c757d; color: white;">Adotado</span>
                                     <?php endif; ?>
-                                    <img src="<?= htmlspecialchars($poke['imagem']) ?>" alt="<?= htmlspecialchars($poke['alt_texto']) ?>" width="280" height="200" loading="lazy">
+                                    <img src="<?= htmlspecialchars($poke['imagem']) ?>" alt="<?= htmlspecialchars($poke['alt_texto'] ?? $poke['nome']) ?>" width="280" height="200" loading="lazy">
                                 </div>
                                 <div class="card-pokemon-corpo">
                                     <div class="tags-tipo">
@@ -178,13 +187,34 @@ $pokemons = $stmt->fetchAll();
                                         <li><strong>Local de Resgate:</strong> <?= htmlspecialchars($poke['local_resgate']) ?></li>
                                     </ul>
                                     <p class="descricao-resumida"><?= htmlspecialchars($poke['descricao']) ?></p>
-                                    <div class="card-pokemon-acoes">
+
+                                    <!-- AÇÕES DO CARD -->
+                                    <div class="card-pokemon-acoes" style="margin-top: 15px;">
                                         <?php if ($poke['status'] === 'disponivel'): ?>
-                                            <a href="como-adotar.php" class="btn-card-adotar">Quero Adotar</a>
+                                            <?php if (Auth::check()): ?>
+                                                <form action="solicitar-adocao.php" method="post" style="width: 100%;">
+                                                    <input type="hidden" name="csrf_token" value="<?= Csrf::generateToken() ?>">
+                                                    <input type="hidden" name="pokemon_id" value="<?= $poke['id'] ?>">
+                                                    <button type="submit" class="btn-card-adotar" style="width: 100%; cursor: pointer; border: none; padding: 10px; font-weight: bold;">
+                                                        Quero Adotar
+                                                    </button>
+                                                </form>
+                                            <?php else: ?>
+                                                <a href="login.php?erro=acesso_negado" class="btn-card-adotar" style="display: block; text-align: center; text-decoration: none;">
+                                                    Login para Adotar
+                                                </a>
+                                            <?php endif; ?>
+                                        <?php elseif ($poke['status'] === 'em-processo'): ?>
+                                            <button class="btn-card-adotar desabilitado" disabled style="width: 100%; background: #f59e0b; cursor: not-allowed; border: none; padding: 10px; color: white; border-radius: 6px;">
+                                                Em Análise
+                                            </button>
                                         <?php else: ?>
-                                            <span class="btn-card-adotar desabilitado">Em Análise</span>
+                                            <button class="btn-card-adotar desabilitado" disabled style="width: 100%; background: #6c757d; cursor: not-allowed; border: none; padding: 10px; color: white; border-radius: 6px;">
+                                                Já Adotado ❤️
+                                            </button>
                                         <?php endif; ?>
                                     </div>
+
                                 </div>
                             </article>
                         <?php endforeach; ?>
