@@ -1,6 +1,8 @@
 <?php
 require_once 'config/database.php';
 
+$pagina_atual = basename($_SERVER['PHP_SELF']);
+
 // Captura e sanitiza os filtros recebidos via GET
 $busca_nome  = isset($_GET['nome']) ? trim($_GET['nome']) : '';
 $filtro_tipo  = isset($_GET['tipo']) ? trim($_GET['tipo']) : '';
@@ -49,11 +51,22 @@ $pokemons = $stmt->fetchAll();
                 <h1>PokéLar</h1>
             </a>
             <nav id="nav" aria-label="Navegação Principal">
-                <a href="index.php" class="nav-link">Início</a>
-                <a href="pokemon.php" class="nav-link ativo" aria-current="page">Pokémon Disponíveis</a>
-                <a href="como-adotar.php" class="nav-link">Como Adotar</a>
-                <a href="sobre.php" class="nav-link">Sobre Nós</a>
-                <a href="login.php" class="nav-link nav-destaque">Login</a>
+                <a href="index.php" class="nav-link <?= $pagina_atual === 'index.php' ? 'ativo' : '' ?>">Início</a>
+                <a href="pokemon.php" class="nav-link <?= $pagina_atual === 'pokemon.php' ? 'ativo' : '' ?>">Pokémon Disponíveis</a>
+                <a href="como-adotar.php" class="nav-link <?= $pagina_atual === 'como-adotar.php' ? 'ativo' : '' ?>">Como Adotar</a>
+                <a href="sobre.php" class="nav-link <?= $pagina_atual === 'sobre.php' ? 'ativo' : '' ?>">Sobre Nós</a>
+
+                <?php 
+                require_once 'src/Auth.php';
+                if (Auth::check()): 
+                ?>
+                    <?php if (Auth::isAdmin()): ?>
+                        <a href="admin/index.php" class="nav-link nav-destaque">Painel Admin</a>
+                    <?php endif; ?>
+                    <a href="logout.php" class="nav-link" style="background-color: #dc3545; color: white;">Sair</a>
+                <?php else: ?>
+                    <a href="login.php" class="nav-link nav-destaque <?= $pagina_atual === 'login.php' ? 'ativo' : '' ?>">Login</a>
+                <?php endif; ?>
             </nav>
             <div id="contato-rapido">
                 <a href="https://wa.me/5511941984860" target="_blank" rel="noopener noreferrer" title="Falar no WhatsApp">(11) 94198-4860</a>

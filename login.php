@@ -5,6 +5,8 @@ require_once 'src/Auth.php';
 
 $erro = '';
 
+$pagina_atual = basename($_SERVER['PHP_SELF']);
+
 if (Auth::check()) {
     header('Location: index.php');
     exit;
@@ -59,11 +61,22 @@ if (isset($_GET['erro']) && $_GET['erro'] === 'acesso_negado') {
 
             <!-- Navegação Principal -->
             <nav id="nav" aria-label="Navegação Principal">
-                <a href="index.php" class="nav-link">Início</a>
-                <a href="pokemon.php" class="nav-link">Pokémon Disponíveis</a>
-                <a href="como-adotar.php" class="nav-link">Como Adotar</a>
-                <a href="sobre.php" class="nav-link">Sobre Nós</a>
-                <a href="login.php" class="nav-link nav-destaque ativo" aria-current="page">Login</a>
+                <a href="index.php" class="nav-link <?= $pagina_atual === 'index.php' ? 'ativo' : '' ?>">Início</a>
+                <a href="pokemon.php" class="nav-link <?= $pagina_atual === 'pokemon.php' ? 'ativo' : '' ?>">Pokémon Disponíveis</a>
+                <a href="como-adotar.php" class="nav-link <?= $pagina_atual === 'como-adotar.php' ? 'ativo' : '' ?>">Como Adotar</a>
+                <a href="sobre.php" class="nav-link <?= $pagina_atual === 'sobre.php' ? 'ativo' : '' ?>">Sobre Nós</a>
+
+                <?php 
+                require_once 'src/Auth.php';
+                if (Auth::check()): 
+                ?>
+                    <?php if (Auth::isAdmin()): ?>
+                        <a href="admin/index.php" class="nav-link nav-destaque">Painel Admin</a>
+                    <?php endif; ?>
+                    <a href="logout.php" class="nav-link" style="background-color: #dc3545; color: white;">Sair</a>
+                <?php else: ?>
+                    <a href="login.php" class="nav-link nav-destaque <?= $pagina_atual === 'login.php' ? 'ativo' : '' ?>">Login</a>
+                <?php endif; ?>
             </nav>
 
             <!-- Contato Rápido -->
