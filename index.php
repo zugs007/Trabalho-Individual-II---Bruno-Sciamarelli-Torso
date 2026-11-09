@@ -19,11 +19,11 @@
             </a>
 
             <nav id="nav" aria-label="Navegação Principal">
-                <a href="index.html" class="nav-link ativo" aria-current="page">Início</a>
-                <a href="pokemon.html" class="nav-link">Pokémon Disponíveis</a>
-                <a href="como-adotar.html" class="nav-link">Como Adotar</a>
-                <a href="sobre.html" class="nav-link">Sobre Nós</a>
-                <a href="login.html" class="nav-link nav-destaque">Login</a>
+                <a href="index.php" class="nav-link ativo" aria-current="page">Início</a>
+                <a href="pokemon.php" class="nav-link">Pokémon Disponíveis</a>
+                <a href="como-adotar.php" class="nav-link">Como Adotar</a>
+                <a href="sobre.php" class="nav-link">Sobre Nós</a>
+                <a href="login.php" class="nav-link nav-destaque">Login</a>
             </nav>
 
             <div id="contato-rapido">
