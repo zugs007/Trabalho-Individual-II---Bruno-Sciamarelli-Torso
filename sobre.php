@@ -124,7 +124,7 @@ $pagina_atual = basename($_SERVER['PHP_SELF']);
                         Seja adotando um novo parceiro de jornada, sendo um voluntário em nossa sede ou fazendo uma doação para suprir rações e itens medicinais.
                     </p>
                     <div class="cta-botoes">
-                        <a href="pokemon.html" class="btn-cta-primario">Conhecer Pokémon</a>
+                        <a href="pokemon.php" class="btn-cta-primario">Conhecer Pokémon</a>
                         <a href="https://wa.me/5511941984860" target="_blank" rel="noopener noreferrer" class="btn-cta-secundario">Falar Conosco</a>
                     </div>
                 </div>

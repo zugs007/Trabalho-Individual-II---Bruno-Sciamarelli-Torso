@@ -2,7 +2,6 @@
 require_once 'src/Auth.php';
 $pagina_atual = basename($_SERVER['PHP_SELF']);
 ?>
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -10,16 +9,62 @@ $pagina_atual = basename($_SERVER['PHP_SELF']);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PokéLar - Centro de Resgate e Adoção Pokémon</title>
 
-    <!-- Preload da imagem do Hero para resolver 'LCP request discovery' -->
+    <!-- Preload da imagem do Hero -->
     <link rel="preload" as="image" href="img/bg-hero.jpg">
 
     <link rel="stylesheet" href="css/style.css">
+
+    <!-- Estilos do Modal PIX -->
+    <style>
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.65);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-conteudo {
+            background: #ffffff;
+            padding: 30px;
+            border-radius: var(--raio-borda);
+            max-width: 420px;
+            width: 90%;
+            position: relative;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+            animation: modalSlide 0.3s ease;
+        }
+        .modal-fechar {
+            position: absolute;
+            top: 15px;
+            right: 18px;
+            background: none;
+            border: none;
+            font-size: 1.8rem;
+            cursor: pointer;
+            color: var(--texto-suave);
+            line-height: 1;
+        }
+        .modal-fechar:hover {
+            color: #dc3545;
+        }
+        @keyframes modalSlide {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
 </head>
 <body>
 
+    <!-- CABEÇALHO FIXO DO SITE -->
     <header id="cabeca">
         <div id="cabeca-container">
-            <a href="index.html" id="brand">
+            <a href="index.php" id="brand">
                 <h1>PokéLar</h1>
             </a>
 
@@ -62,7 +107,7 @@ $pagina_atual = basename($_SERVER['PHP_SELF']);
                 <p>Dezenas de Pokémon resgatados nas rotas de Kanto aguardam por uma segunda chance. Encontre seu novo companheiro de jornada hoje mesmo.</p>
                 
                 <div class="hero-botoes">
-                    <a href="pokemon.html" class="btn-hero-primario">Quero Adotar</a>
+                    <a href="pokemon.php" class="btn-hero-primario">Quero Adotar</a>
                     <a href="#como-ajudar" class="btn-hero-secundario">Como Ajudar</a>
                 </div>
             </div>
@@ -87,32 +132,43 @@ $pagina_atual = basename($_SERVER['PHP_SELF']);
             </div>
         </section>
 
-        <!-- Como Ajudar -->
+        <!-- Como Ajudar INTERATIVO -->
+        <!-- Como Ajudar INTERATIVO -->
         <section id="como-ajudar">
             <h2>Como Você Pode Ajudar</h2>
             <div class="ajuda-grid">
+                
+                <!-- Card 1: PIX Solidário com Modal -->
                 <article class="card-ajuda">
                     <div>
                         <h3>PIX Solidário</h3>
                         <p>Contribua com qualquer valor para financiar Berries e Potions para os resgatados em reabilitação.</p>
                     </div>
-                    <a href="#" class="botao">Fazer Doação</a>
+                    <a href="javascript:void(0)" onclick="abrirModalPix()" class="botao">
+                        Fazer Doação
+                    </a>
                 </article>
 
+                <!-- Card 2: Suprimentos via WhatsApp -->
                 <article class="card-ajuda">
                     <div>
                         <h3>Doação de Suprimentos</h3>
                         <p>Aceitamos Pokébolas, mantas, brinquedos e itens de restauração em nosso centro de acolhimento.</p>
                     </div>
-                    <a href="#" class="botao">Pontos de Coleta</a>
+                    <a href="https://wa.me/5511941984860?text=Olá!%20Gostaria%20de%20combinar%20uma%20doação%20de%20suprimentos%20para%20o%20PokéLar." target="_blank" rel="noopener noreferrer" class="botao">
+                        Pontos de Coleta
+                    </a>
                 </article>
 
+                <!-- Card 3: Voluntariado via WhatsApp -->
                 <article class="card-ajuda">
                     <div>
                         <h3>Seja Voluntário</h3>
                         <p>Doe seu tempo para ajudar na socialização, passeios e cuidados diários com os Pokémon.</p>
                     </div>
-                    <a href="#" class="botao">Quero Ser Voluntário</a>
+                    <a href="https://wa.me/5511941984860?text=Olá!%20Tenho%20interesse%20em%20ser%20voluntário%20no%20PokéLar." target="_blank" rel="noopener noreferrer" class="botao">
+                        Quero Ser Voluntário
+                    </a>
                 </article>
             </div>
         </section>
@@ -156,6 +212,60 @@ $pagina_atual = basename($_SERVER['PHP_SELF']);
         </section>
     </main>
 
+    <!-- MODAL POPUP PIX SOLIDÁRIO -->
+    <div id="modal-pix" class="modal-overlay" style="display: none;">
+        <div class="modal-conteudo">
+            <button class="modal-fechar" onclick="fecharModalPix()" title="Fechar">&times;</button>
+            <div style="text-align: center;">
+                <span style="font-size: 2.5rem; display: block; margin-bottom: 5px;">⚡</span>
+                <h3 style="margin: 0 0 8px 0; color: var(--texto-escuro); font-size: 1.4rem;">PIX Solidário PokéLar</h3>
+                <p style="color: var(--texto-suave); font-size: 0.9rem; margin-bottom: 18px; line-height: 1.4;">
+                    Sua doação ajuda a comprar Berries, Potions e suprimentos veterinários para nossos resgatados!
+                </p>
+
+                <div style="background: #f8f9fa; padding: 15px; border-radius: 12px; border: 1px solid var(--borda-suave); margin-bottom: 20px;">
+                    <!-- Gerador Automático do QR Code com a Chave PIX -->
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=11941984860" alt="QR Code PIX PokéLar" width="180" height="180" style="margin: 0 auto 10px auto; border-radius: 8px; border: 1px solid #ddd;">
+                    
+                    <p style="margin: 5px 0 4px 0; font-weight: bold; font-size: 0.85rem; color: var(--texto-suave);">Chave PIX (Telefone):</p>
+                    <code style="background: #e2e8f0; padding: 6px 12px; border-radius: 6px; font-size: 1.05rem; font-weight: bold; color: var(--verde-texto); display: inline-block;">(11) 94198-4860</code>
+                </div>
+
+                <button onclick="copiarPix()" class="btn-filtrar" style="width: 100%; border: none; cursor: pointer; padding: 12px; font-weight: bold;">
+                    📋 Copiar Chave PIX
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPT DE CONTROLE DO MODAL PIX -->
+    <script>
+        function abrirModalPix() {
+            document.getElementById('modal-pix').style.display = 'flex';
+        }
+
+        function fecharModalPix() {
+            document.getElementById('modal-pix').style.display = 'none';
+        }
+
+        function copiarPix() {
+            navigator.clipboard.writeText('11941984860').then(() => {
+                alert('Chave PIX (11941984860) copiada com sucesso!');
+            }).catch(() => {
+                alert('Chave PIX: 11941984860');
+            });
+        }
+
+        // Fechar modal ao clicar fora da caixa de conteúdo
+        window.onclick = function(event) {
+            const modal = document.getElementById('modal-pix');
+            if (event.target === modal) {
+                fecharModalPix();
+            }
+        };
+    </script>
+
+    <!-- RODAPÉ COMPLETO -->
     <footer id="rodape">
         <div class="rodape-conteudo">
             <section class="newsletter">

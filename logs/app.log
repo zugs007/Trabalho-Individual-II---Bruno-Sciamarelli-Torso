@@ -21,3 +21,16 @@
 [2026-11-09 23:24:11] [INFO] [IP: ::1] Logout efetuado: bruno@email.com
 [2026-11-09 23:25:47] [INFO] [IP: ::1] Login bem-sucedido: bruno@email.com (Perfil: )
 [2026-11-09 23:25:52] [INFO] [IP: ::1] Solicitação de adoção efetuada: Pokémon Snorlax (#6) reservado pelo treinador bruno@email.com
+[2026-11-09 23:35:28] [INFO] [IP: ::1] Agendamento de visita efetuado: Pokémon Eevee (#5) reservado por bruno@email.com para 2026-11-14 às 13:30
+[2026-11-09 23:39:11] [INFO] [IP: ::1] Logout efetuado: bruno@email.com
+[2026-11-09 23:39:16] [INFO] [IP: ::1] Login bem-sucedido: admin@pokelar.com (Perfil: admin)
+[2026-11-09 23:41:19] [INFO] [IP: ::1] Status do Pokémon Bulbasaur (ID: 1) alterado para 'adotado' por admin@pokelar.com
+[2026-11-09 23:41:26] [INFO] [IP: ::1] Status do Pokémon Bulbasaur (ID: 1) alterado para 'em-processo' por admin@pokelar.com
+[2026-11-09 23:41:31] [INFO] [IP: ::1] Status do Pokémon Bulbasaur (ID: 1) alterado para 'disponivel' por admin@pokelar.com
+[2026-11-09 23:41:32] [INFO] [IP: ::1] Status do Pokémon Snorlax (ID: 6) alterado para 'disponivel' por admin@pokelar.com
+[2026-11-09 23:41:33] [INFO] [IP: ::1] Status do Pokémon Eevee (ID: 5) alterado para 'disponivel' por admin@pokelar.com
+[2026-11-09 23:43:20] [INFO] [IP: ::1] Pokémon editado: Snorlax (ID: 6) por admin@pokelar.com
+[2026-11-09 23:45:43] [INFO] [IP: ::1] Logout efetuado: admin@pokelar.com
+[2026-11-09 23:52:34] [INFO] [IP: ::1] Login bem-sucedido: admin@pokelar.com (Perfil: admin)
+[2026-11-09 23:52:36] [INFO] [IP: ::1] Logout efetuado: admin@pokelar.com
+[2026-11-10 00:00:20] [INFO] [IP: ::1] Login bem-sucedido: admin@pokelar.com (Perfil: admin)

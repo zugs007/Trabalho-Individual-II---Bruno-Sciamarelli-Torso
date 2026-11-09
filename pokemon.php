@@ -192,13 +192,9 @@ $pagina_atual = basename($_SERVER['PHP_SELF']);
                                     <div class="card-pokemon-acoes" style="margin-top: 15px;">
                                         <?php if ($poke['status'] === 'disponivel'): ?>
                                             <?php if (Auth::check()): ?>
-                                                <form action="solicitar-adocao.php" method="post" style="width: 100%;">
-                                                    <input type="hidden" name="csrf_token" value="<?= Csrf::generateToken() ?>">
-                                                    <input type="hidden" name="pokemon_id" value="<?= $poke['id'] ?>">
-                                                    <button type="submit" class="btn-card-adotar" style="width: 100%; cursor: pointer; border: none; padding: 10px; font-weight: bold;">
-                                                        Quero Adotar
-                                                    </button>
-                                                </form>
+                                                <a href="solicitar-adocao.php?id=<?= $poke['id'] ?>" class="btn-card-adotar" style="display: block; text-align: center; text-decoration: none; font-weight: bold; width: 100%;">
+                                                    📅 Quero Adotar (Agendar Visita)
+                                                </a>
                                             <?php else: ?>
                                                 <a href="login.php?erro=acesso_negado" class="btn-card-adotar" style="display: block; text-align: center; text-decoration: none;">
                                                     Login para Adotar
@@ -206,7 +202,7 @@ $pagina_atual = basename($_SERVER['PHP_SELF']);
                                             <?php endif; ?>
                                         <?php elseif ($poke['status'] === 'em-processo'): ?>
                                             <button class="btn-card-adotar desabilitado" disabled style="width: 100%; background: #f59e0b; cursor: not-allowed; border: none; padding: 10px; color: white; border-radius: 6px;">
-                                                Em Análise
+                                                Visita Agendada / Em Análise
                                             </button>
                                         <?php else: ?>
                                             <button class="btn-card-adotar desabilitado" disabled style="width: 100%; background: #6c757d; cursor: not-allowed; border: none; padding: 10px; color: white; border-radius: 6px;">

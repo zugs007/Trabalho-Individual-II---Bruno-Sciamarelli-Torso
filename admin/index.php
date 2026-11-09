@@ -1,6 +1,7 @@
 <?php
 require_once '../config/database.php';
 require_once '../src/Auth.php';
+require_once '../src/Csrf.php';
 
 // Exige perfil de Administrador
 Auth::requireAdmin();
@@ -9,7 +10,6 @@ Auth::requireAdmin();
 $stmt = $pdo->query("SELECT * FROM pokemons ORDER BY id DESC");
 $pokemons = $stmt->fetchAll();
 
-// Descobre a página atual para manter a classe 'ativo' no menu
 $pagina_atual = basename($_SERVER['PHP_SELF']);
 ?>
 <!DOCTYPE html>
@@ -22,7 +22,7 @@ $pagina_atual = basename($_SERVER['PHP_SELF']);
 </head>
 <body>
 
-    <!-- CABEÇALHO FIXO COM A POKÉBOLA -->
+    <!-- CABEÇALHO FIXO -->
     <header id="cabeca">
         <div id="cabeca-container">
             <a href="../index.php" id="brand">
@@ -34,14 +34,13 @@ $pagina_atual = basename($_SERVER['PHP_SELF']);
                 <a href="../como-adotar.php" class="nav-link">Como Adotar</a>
                 <a href="../sobre.php" class="nav-link">Sobre Nós</a>
                 <a href="index.php" class="nav-link nav-destaque ativo">Painel Admin</a>
-                <a href="../logout.php" class="nav-link" style="background-color: #dc3545;">Sair</a>
+                <a href="../logout.php" class="nav-link" style="background-color: #dc3545; color: white;">Sair</a>
             </nav>
             <div id="contato-rapido">
                 <a href="https://wa.me/5511941984860" target="_blank" rel="noopener noreferrer" title="Falar no WhatsApp">(11) 94198-4860</a>
             </div>
         </div>
 
-        <!-- LINHA PRETA COM A POKÉBOLA INTERATIVA -->
         <div id="linha">
             <button id="bola" onclick="alert('Área Administrativa do PokéLar!')" title="Clique para uma surpresa" type="button">
                 <img src="../img/botao_pokebola.png" alt="Pokébola Interativa" width="58" height="58">
@@ -51,21 +50,39 @@ $pagina_atual = basename($_SERVER['PHP_SELF']);
 
     <!-- CONTEÚDO PRINCIPAL -->
     <main>
-        <!-- BANNER PADRÃO DO SITE -->
         <section class="pagina-cabecalho">
             <div class="container">
                 <span class="badge-tag">⚡ Gestão do Sistema</span>
                 <h2>Painel Administrativo</h2>
-                <p>Gerencie o cadastro de Pokémon resgatados, atualize status e administre o catálogo do PokéLar.</p>
+                <p>Gerencie o cadastro de Pokémon resgatados, altere status em tempo real e administre o catálogo do PokéLar.</p>
             </div>
         </section>
 
-        <!-- TABELA DE GESTÃO -->
         <section class="pagina-conteudo">
             <div class="container">
+
+                <!-- MENSAGENS DE FEEDBACK -->
+                <?php if (isset($_GET['msg']) && $_GET['msg'] === 'status_atualizado'): ?>
+                    <div style="background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; padding: 12px 18px; border-radius: 8px; margin-bottom: 20px; font-weight: bold;">
+                        ✅ Status do Pokémon atualizado com sucesso!
+                    </div>
+                <?php endif; ?>
+
+                <?php if (isset($_GET['msg']) && $_GET['msg'] === 'cadastrado'): ?>
+                    <div style="background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; padding: 12px 18px; border-radius: 8px; margin-bottom: 20px; font-weight: bold;">
+                        🎉 Novo Pokémon cadastrado com sucesso!
+                    </div>
+                <?php endif; ?>
+
+                <?php if (isset($_GET['msg']) && $_GET['msg'] === 'removido'): ?>
+                    <div style="background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; padding: 12px 18px; border-radius: 8px; margin-bottom: 20px; font-weight: bold;">
+                        🗑️ Registro de Pokémon removido.
+                    </div>
+                <?php endif; ?>
+
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px;">
                     <div>
-                        <h3 style="margin: 0; font-size: 1.5rem; color: var(--texto-escuro);">Lista de Pokémon Cadastrados</h3>
+                        <h3 style="margin: 0; font-size: 1.5rem; color: var(--texto-escuro);">Catálogo de Resgatados</h3>
                         <p style="margin: 5px 0 0 0; color: var(--texto-suave);">
                             Sessão ativa: <strong><?= htmlspecialchars($_SESSION['usuario_nome']) ?></strong> (<?= htmlspecialchars($_SESSION['usuario_perfil']) ?>)
                         </p>
@@ -78,10 +95,10 @@ $pagina_atual = basename($_SERVER['PHP_SELF']);
                         <thead>
                             <tr style="background-color: #f1f5f9; border-bottom: 2px solid var(--borda-suave);">
                                 <th style="padding: 16px;">ID</th>
-                                <th style="padding: 16px;">Nome</th>
+                                <th style="padding: 16px;">Pokémon</th>
                                 <th style="padding: 16px;">Tipo Primário</th>
                                 <th style="padding: 16px;">Porte</th>
-                                <th style="padding: 16px;">Status</th>
+                                <th style="padding: 16px;">Status (Atualização Rápida)</th>
                                 <th style="padding: 16px; text-align: center;">Ações</th>
                             </tr>
                         </thead>
@@ -91,7 +108,7 @@ $pagina_atual = basename($_SERVER['PHP_SELF']);
                                     <td style="padding: 16px; font-weight: bold; color: var(--texto-suave);">#<?= $poke['id'] ?></td>
                                     <td style="padding: 16px;">
                                         <div style="display: flex; align-items: center; gap: 12px;">
-                                            <img src="../<?= htmlspecialchars($poke['imagem']) ?>" alt="" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 1px solid #ddd;">
+                                            <img src="../<?= htmlspecialchars($poke['imagem']) ?>" alt="" style="width: 42px; height: 42px; border-radius: 50%; object-fit: cover; border: 1px solid #ddd;">
                                             <strong><?= htmlspecialchars($poke['nome']) ?></strong>
                                         </div>
                                     </td>
@@ -101,13 +118,24 @@ $pagina_atual = basename($_SERVER['PHP_SELF']);
                                         </span>
                                     </td>
                                     <td style="padding: 16px; text-transform: capitalize;"><?= htmlspecialchars($poke['porte']) ?></td>
+                                    
+                                    <!-- COLUNA DE STATUS COM FORMULÁRIO RÁPIDO -->
                                     <td style="padding: 16px;">
-                                        <?php if ($poke['status'] === 'disponivel'): ?>
-                                            <span class="badge-status disponivel">Disponível</span>
-                                        <?php else: ?>
-                                            <span class="badge-status em-processo">Em Adoção</span>
-                                        <?php endif; ?>
+                                        <form action="atualizar-status.php" method="post" style="display: flex; align-items: center; margin: 0;">
+                                            <input type="hidden" name="csrf_token" value="<?= Csrf::generateToken() ?>">
+                                            <input type="hidden" name="id" value="<?= $poke['id'] ?>">
+                                            <select 
+                                                name="status" 
+                                                onchange="this.form.submit()" 
+                                                style="padding: 6px 12px; border-radius: 20px; border: 1px solid #cbd5e1; font-weight: bold; font-size: 0.85rem; cursor: pointer; outline: none; background: #fff;"
+                                            >
+                                                <option value="disponivel" <?= $poke['status'] === 'disponivel' ? 'selected' : '' ?>>🟢 Disponível</option>
+                                                <option value="em-processo" <?= ($poke['status'] === 'em-processo' || $poke['status'] === 'em_analise') ? 'selected' : '' ?>>🟡 Em Análise</option>
+                                                <option value="adotado" <?= $poke['status'] === 'adotado' ? 'selected' : '' ?>>🔴 Adotado</option>
+                                            </select>
+                                        </form>
                                     </td>
+
                                     <td style="padding: 16px; text-align: center;">
                                         <a href="update.php?id=<?= $poke['id'] ?>" style="color: #0284c7; text-decoration: none; font-weight: bold; margin-right: 15px;">Editar</a>
                                         <a href="delete.php?id=<?= $poke['id'] ?>" onclick="return confirm('Deseja realmente remover <?= htmlspecialchars($poke['nome']) ?>?');" style="color: #e53e3e; text-decoration: none; font-weight: bold;">Excluir</a>
