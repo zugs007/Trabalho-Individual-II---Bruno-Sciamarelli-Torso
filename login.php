@@ -1,3 +1,44 @@
+<?php
+require_once 'config/database.php';
+require_once 'src/Csrf.php';
+require_once 'src/Auth.php';
+
+$erro = '';
+
+if (Auth::check()) {
+    header('Location: index.php');
+    exit;
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $email = trim($_POST['email'] ?? '');
+    $senha = trim($_POST['senha'] ?? '');
+    $token = $_POST['csrf_token'] ?? '';
+
+    // Validação Anti-CSRF
+    if (!Csrf::validateToken($token)) {
+        $erro = 'Requisição inválida (Token CSRF falhou). Tente novamente.';
+    } elseif (empty($email) || empty($senha)) {
+        $erro = 'Por favor, preencha todos os campos.';
+    } else {
+        if (Auth::login($email, $senha, $pdo)) {
+            // Se for Admin vai para o painel restrito, se for Usuário vai para o catálogo
+            if (Auth::isAdmin()) {
+                header('Location: admin/index.php');
+            } else {
+                header('Location: pokemon.php');
+            }
+            exit;
+        } else {
+            $erro = 'E-mail ou senha incorretos.';
+        }
+    }
+}
+
+if (isset($_GET['erro']) && $_GET['erro'] === 'acesso_negado') {
+    $erro = 'Você precisa fazer login para acessar essa página.';
+}
+?>
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -12,17 +53,17 @@
     <header id="cabeca">
         <div id="cabeca-container">
             <!-- Logo do PokéLar -->
-            <a href="index.html" id="brand">
+            <a href="index.php" id="brand">
                 <h1>PokéLar</h1>
             </a>
 
             <!-- Navegação Principal -->
             <nav id="nav" aria-label="Navegação Principal">
-                <a href="index.html" class="nav-link">Início</a>
-                <a href="pokemon.html" class="nav-link">Pokémon Disponíveis</a>
-                <a href="como-adotar.html" class="nav-link">Como Adotar</a>
-                <a href="sobre.html" class="nav-link">Sobre Nós</a>
-                <a href="login.html" class="nav-link nav-destaque ativo" aria-current="page">Login</a>
+                <a href="index.php" class="nav-link">Início</a>
+                <a href="pokemon.php" class="nav-link">Pokémon Disponíveis</a>
+                <a href="como-adotar.php" class="nav-link">Como Adotar</a>
+                <a href="sobre.php" class="nav-link">Sobre Nós</a>
+                <a href="login.php" class="nav-link nav-destaque ativo" aria-current="page">Login</a>
             </nav>
 
             <!-- Contato Rápido -->
@@ -60,7 +101,16 @@
                         <p>Digite suas credenciais de treinador para continuar.</p>
                     </div>
 
-                    <form action="#" method="post" class="form-login">
+                    <?php if (!empty($erro)): ?>
+                        <div style="background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; padding: 12px; border-radius: 6px; margin-bottom: 20px; text-align: center; font-size: 0.95rem;">
+                            <?= htmlspecialchars($erro) ?>
+                        </div>
+                    <?php endif; ?>
+
+                    <form action="login.php" method="post" class="form-login">
+                        <!-- Token CSRF de Segurança -->
+                        <input type="hidden" name="csrf_token" value="<?= Csrf::generateToken() ?>">
+
                         <div class="campo-grupo">
                             <label for="email-login">E-mail ou ID de Treinador</label>
                             <input 
@@ -70,6 +120,7 @@
                                 placeholder="exemplo@pokemail.com" 
                                 required 
                                 autocomplete="email"
+                                value="<?= htmlspecialchars($_POST['email'] ?? '') ?>"
                             >
                         </div>
 
@@ -84,7 +135,6 @@
                                 name="senha" 
                                 placeholder="••••••••" 
                                 required 
-                                minlength="6"
                                 autocomplete="current-password"
                             >
                         </div>
