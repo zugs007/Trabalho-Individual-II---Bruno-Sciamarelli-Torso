@@ -5,6 +5,7 @@ Projeto acadêmico desenvolvido para a disciplina de SCOM. O **PokéLar** é um 
 ---
 
 ## Estrutura de Arquivos do Projeto
+```text
 pokelar/
 ├── admin/                     # Área Administrativa Protegida
 │   ├── adocoes.php            # Painel de Gestão de Solicitações e Status
@@ -38,6 +39,7 @@ pokelar/
 ├── schema.sql                 # Script SQL para Criação do Banco e Tabelas
 ├── sobre.php                  # Informações sobre a ONG PokéLar
 └── README.md                  # Documentação do Projeto
+```
 ---
 
 ## Instruções de Inicialização e Execução
@@ -71,9 +73,8 @@ pokelar/
 ## Credenciais para Testes de Avaliação
 
 Para testar as diferentes permissões do sistema, utilize as contas pré-cadastradas:
-
-| Perfil | E-mail | Senha | Permissões |
-| **Administrador** | `admin@pokelar.com` | `admin123` | Acesso total ao painel `/admin`, cadastro, edição, gestão de status de visitas e exportação CSV. |
-| **Treinador (Cliente)**   | `ash@pokelar.com` | `cliente123` | Acesso ao catálogo, agendamento de visitas presenciais e acompanhamento em `minha-conta.php`. |
-
+```text
+**Administrador** - `admin@pokelar.com` - `admin123` - Acesso total ao painel `/admin`, cadastro, edição, gestão de status de visitas e exportação CSV.
+**Treinador (Cliente)** - `ash@pokelar.com` - `cliente123` - Acesso ao catálogo, agendamento de visitas presenciais e acompanhamento em `minha-conta.php`.
+```
 ---
