@@ -1,7 +1,7 @@
 CREATE DATABASE IF NOT EXISTS pokelar_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE pokelar_db;
 
--- usuários
+-- senha admin: admin123
 CREATE TABLE IF NOT EXISTS usuarios (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS usuarios (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
 
--- pokémon
+-- pokemon
 CREATE TABLE IF NOT EXISTS pokemons (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(50) NOT NULL,
@@ -28,11 +28,25 @@ CREATE TABLE IF NOT EXISTS pokemons (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
 
--- admin123
-INSERT INTO usuarios (nome, email, senha, perfil) VALUES 
-('Administrador', 'admin@pokelar.com', '$2y$10$42.qT4m9X5Z0W3P7J1yY8uR.x9J9x9J9x9J9x9J9x9J9x9J9x9J9x', 'admin');
+-- adocoes
+CREATE TABLE IF NOT EXISTS adocoes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    usuario_id INT NOT NULL,
+    pokemon_id INT NOT NULL,
+    data_visita DATE NOT NULL,
+    hora_visita TIME NOT NULL,
+    observacoes TEXT NULL,
+    status ENUM('em_analise', 'confirmado', 'concluido', 'cancelado') NOT NULL DEFAULT 'em_analise',
+    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
+    FOREIGN KEY (pokemon_id) REFERENCES pokemons(id) ON DELETE CASCADE
+) ENGINE=InnoDB;
 
--- pokemon default
+-- inserções default
+INSERT INTO usuarios (nome, email, senha, perfil) VALUES 
+('Administrador PokéLar', 'admin@pokelar.com', '$2y$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 'admin'),
+('Ash Ketchum', 'ash@pokelar.com', '$2y$10$qR6FvY9x8Z1w2e3r4t5y6u7i8o9p0a1b2c3d4e5f6g7h8i9j0k1l2', 'usuario');
+
 INSERT INTO pokemons (nome, tipo_primario, tipo_secundario, porte, idade, temperamento, local_resgate, status, imagem, alt_texto, descricao) VALUES
 ('Bulbasaur', 'planta', 'veneno', 'pequeno', 'Jovem (2 anos)', 'Calmo e afetuoso', 'Floresta de Viridian', 'disponivel', 'img/bulbasaur.png', 'Bulbasaur sorrindo com um bulbo verde nas costas', 'Muito dócil e adora tomar sol no jardim. Ideal para treinadores iniciantes ou famílias com crianças.'),
 ('Charmander', 'fogo', NULL, 'pequeno', 'Filhote (1 ano)', 'Leal e enérgico', 'Rota 24 (Sob chuva)', 'disponivel', 'img/charmander.png', 'Charmander alegre com a chama da cauda acesa', 'Resgatado em dia de tempestade, hoje está saudável, cheio de energia e adora brincar perto de lareiras.'),

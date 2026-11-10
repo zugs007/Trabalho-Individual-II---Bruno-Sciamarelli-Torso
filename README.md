@@ -1,55 +1,79 @@
 # PokéLar - Centro de Resgate e Adoção Pokémon
 
-Projeto desenvolvido para a disciplina de SCOM. O **PokéLar** é um site fictício de uma instituição dedicada ao resgate, reabilitação e adoção responsável de Pokémon na região de Kanto.
+Projeto acadêmico desenvolvido para a disciplina de SCOM. O **PokéLar** é um portal dinâmico Full-Stack dedicado ao resgate, reabilitação e gestão de solicitações de adoção responsável de Pokémon na região de Kanto.
 
 ---
 
-## Prévia do Projeto
-
-![Prévia do PokéLar](img/preview.png)
-
----
-
-## Páginas
-
-- **Início (`index.html`)**: Apresentação da instituição, indicadores de impacto e depoimentos de tutores.
-- **Pokémon Disponíveis (`pokemon.html`)**: Catálogo de Pokémon para adoção com barra de busca e filtros por tipo e porte.
-- **Como Adotar (`como-adotar.html`)**: Passo a passo com orientações e critérios para adoção.
-- **Sobre Nós (`sobre.html`)**: Informações sobre a equipe, estrutura do centro e missão da ONG.
-- **Login (`login.html`)**: Formulário de autenticação para voluntários e adotantes.
-
----
-
-## Estrutura de Arquivos
-
-.
+## Estrutura de Arquivos do Projeto
+pokelar/
+├── admin/                     # Área Administrativa Protegida
+│   ├── adocoes.php            # Painel de Gestão de Solicitações e Status
+│   ├── create.php             # Form de Cadastro com Upload de Imagens
+│   ├── editar.php             # Form de Edição de Pokémon
+│   ├── exportar-csv.php       # Gerador e Download de Relatório CSV
+│   └── index.php              # Painel Geral do Administrador
+├── config/
+│   └── database.php           # Conexão PDO Singleton com o MySQL
 ├── css/
-│   └── style.css
-├── fonts/
-├── img/
-├── index.html
-├── pokemon.html
-├── como-adotar.html
-├── sobre.html
-├── login.html
-├── modelo.html
-└── README.md
+│   └── style.css              # Estilização Unificada do Sistema
+├── img/                       # Ativos de Imagens Estáticas da Interface
+├── logs/
+│   ├── .gitkeep               # Preservador da Pasta no Git
+│   └── app.log                # Log de Auditoria do Sistema
+├── src/
+│   ├── Auth.php               # Middleware de Autenticação e Permissões
+│   ├── Csrf.php               # Gerador e Validador de Tokens CSRF
+│   └── Logger.php             # Classe de Registro de Logs do Sistema
+├── uploads/                   # Diretório de Imagens Enviadas via Upload Real
+│   └── .gitkeep
+├── adocao-sucesso.php         # Confirmação do Agendamento de Visita
+├── agendar-visita.php         # Form Público de Seleção de Data/Hora de Visita
+├── cadastro.php               # Registro de Novos Treinadores
+├── como-adotar.php            # Instruções do Processo de Adoção
+├── index.php                  # Página Inicial do Portal
+├── login.php                  # Tela de Autenticação
+├── logout.php                 # Encerramento de Sessão
+├── minha-conta.php            # Painel do Treinador Logado (Meus Agendamentos)
+├── pokemon.php                # Catálogo Dinâmico com Filtros por Tipo e Porte
+├── schema.sql                 # Script SQL para Criação do Banco e Tabelas
+├── sobre.php                  # Informações sobre a ONG PokéLar
+└── README.md                  # Documentação do Projeto
+---
 
 ## Instruções de Inicialização e Execução
 
-Por se tratar de um projeto construído com HTML e CSS puros, não é necessária a instalação de dependências, pacotes ou etapas de compilação.
+### Pré-requisitos:
+- Servidor Web Apache com PHP 8.2 ou superior (ex: **XAMPP**).
+- Banco de dados MySQL.
 
-### Como abrir o projeto:
+---
 
-#### Opção 1: Acesse o link do GitHub Pages
-1. Abra o seguinte link: https://zugs007.github.io/Trabalho-Individual-I---Bruno-Sciamarelli-Torso/
-2. Acesse o site livremente pela hospedagem do próprio GitHub (não é uma hospedagem local, em caso de testes específicos)
+### Passo a Passo para Configuração:
 
-#### Opção 2: VS Code com Live Server
-1. Abra a pasta do projeto no **VS Code**.
-2. Clique com o botão direito sobre o arquivo `index.html`.
-3. Selecione **"Open with Live Server"**.
+1. **Clonar/Mover o Projeto:**
+   Baixe ou clone o repositório dentro do diretório raiz do seu servidor web local:
+   - XAMPP: `C:/xampp/htdocs/pokelar`
 
-#### Opção 3: Abertura Direta no Navegador
-1. Navegue até a pasta do projeto no seu computador.
-2. Dê um duplo clique no arquivo `index.html` para abri-lo em qualquer navegador (Chrome, Edge, Firefox, Safari).
+2. **Importar o Banco de Dados:**
+   - Acesse o phpMyAdmin em `http://localhost/phpmyadmin`.
+   - Clique em **Importar**.
+   - Escolha o arquivo `schema.sql` localizado na raiz da pasta do projeto e clique em **Executar**.
+   - O script criará o banco `pokelar_db`, as tabelas (`usuarios`, `pokemons`, `adocoes`) e os dados de teste iniciais.
+
+3. **Verificar a Conexão:**
+   - O arquivo `config/database.php` já vem pré-configurado com as credenciais padrão do XAMPP (`host=localhost`, `user=root`, `pass=vacaberta/sem senha`). Se o seu MySQL tiver senha definida, ajuste a variável `$pass` no arquivo.
+
+4. **Acessar o Sistema:**
+   - Abra o navegador e acesse: `http://localhost/pokelar/index.php`.
+
+---
+
+## Credenciais para Testes de Avaliação
+
+Para testar as diferentes permissões do sistema, utilize as contas pré-cadastradas:
+
+| Perfil | E-mail | Senha | Permissões |
+| **Administrador** | `admin@pokelar.com` | `admin123` | Acesso total ao painel `/admin`, cadastro, edição, gestão de status de visitas e exportação CSV. |
+| **Treinador (Cliente)**   | `ash@pokelar.com` | `cliente123` | Acesso ao catálogo, agendamento de visitas presenciais e acompanhamento em `minha-conta.php`. |
+
+---
