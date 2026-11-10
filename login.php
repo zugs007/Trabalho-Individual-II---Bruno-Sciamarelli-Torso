@@ -5,6 +5,18 @@ require_once 'src/Auth.php';
 
 $erro = '';
 
+// Inicializa variáveis de controle de tentativas na sessão
+if (!isset($_SESSION['tentativas_login'])) {
+    $_SESSION['tentativas_login'] = 0;
+    $_SESSION['bloqueado_ate'] = 0;
+}
+
+// Verifica se o usuário ainda está no tempo de penalidade (cooldown)
+if ($_SESSION['bloqueado_ate'] > time()) {
+    $restante = $_SESSION['bloqueado_ate'] - time();
+    $erro = "Muitas tentativas incorretas. Aguarde {$restante} segundos para tentar novamente.";
+}
+
 $pagina_atual = basename($_SERVER['PHP_SELF']);
 
 if (Auth::check()) {
@@ -13,26 +25,59 @@ if (Auth::check()) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $email = trim($_POST['email'] ?? '');
-    $senha = trim($_POST['senha'] ?? '');
-    $token = $_POST['csrf_token'] ?? '';
-
-    // Validação Anti-CSRF
-    if (!Csrf::validateToken($token)) {
-        $erro = 'Requisição inválida (Token CSRF falhou). Tente novamente.';
-    } elseif (empty($email) || empty($senha)) {
-        $erro = 'Por favor, preencha todos os campos.';
+    // Se estiver bloqueado, não processa o envio do formulário
+    if ($_SESSION['bloqueado_ate'] > time()) {
+        $restante = $_SESSION['bloqueado_ate'] - time();
+        $erro = "Muitas tentativas incorretas. Aguarde {$restante} segundos para tentar novamente.";
     } else {
-        if (Auth::login($email, $senha, $pdo)) {
-            // Se for Admin vai para o painel restrito, se for Usuário vai para o catálogo
-            if (Auth::isAdmin()) {
-                    header('Location: admin/index.php');
-            } else {
-                header('Location: minha-conta.php');
-            }
-            exit;
+        $email = trim($_POST['email'] ?? '');
+        $senha = trim($_POST['senha'] ?? '');
+        $token = $_POST['csrf_token'] ?? '';
+
+        // Validação Anti-CSRF
+        if (!Csrf::validateToken($token)) {
+            $erro = 'Requisição inválida (Token CSRF falhou). Tente novamente.';
+        } elseif (empty($email) || empty($senha)) {
+            $erro = 'Por favor, preencha todos os campos.';
         } else {
-            $erro = 'E-mail ou senha incorretos.';
+            // Executa a autenticação no banco via PDO
+            if (Auth::login($email, $senha, $pdo)) {
+                // SUCESSO: Zera os contadores de erro
+                $_SESSION['tentativas_login'] = 0;
+                $_SESSION['bloqueado_ate'] = 0;
+
+                if (isset($_POST['lembrar'])) {
+                    $params = session_get_cookie_params();
+                    setcookie(
+                        session_name(),
+                        session_id(),
+                        time() + (30 * 24 * 60 * 60), // 30 dias em segundos
+                        $params["path"],
+                        $params["domain"],
+                        $params["secure"],
+                        $params["httponly"]
+                    );
+                }
+
+                if (Auth::isAdmin()) {
+                    header('Location: admin/index.php');
+                } else {
+                    header('Location: minha-conta.php');
+                }
+                exit;
+            } else {
+                // FALHA: Incrementa contagem de erros
+                $_SESSION['tentativas_login']++;
+
+                if ($_SESSION['tentativas_login'] >= 5) {
+                    $_SESSION['bloqueado_ate'] = time() + 60; // Bloqueia por 60 segundos
+                    $_SESSION['tentativas_login'] = 0;
+                    $erro = 'Muitas tentativas incorretas. Sua conta foi temporariamente bloqueada por 1 minuto.';
+                } else {
+                    $tentativasRestantes = 5 - $_SESSION['tentativas_login'];
+                    $erro = "E-mail ou senha incorretos. Você tem mais {$tentativasRestantes} tentativa(s).";
+                }
+            }
         }
     }
 }
@@ -140,7 +185,7 @@ if (isset($_GET['erro']) && $_GET['erro'] === 'acesso_negado') {
                         <div class="campo-grupo">
                             <div class="rotulo-com-link">
                                 <label for="senha-login">Senha</label>
-                                <a href="#" class="link-esqueceu-senha">Esqueceu a senha?</a>
+                                <a href="#" class="link-esqueceu-senha" onclick="alert('Por questões de segurança, entre em contato com a administração do PokéLar para redefinir sua senha ou acesse a opção Alterar Senha após realizar o login.'); return false;">Esqueceu a senha?</a>
                             </div>
                             <input 
                                 type="password" 
