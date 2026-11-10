@@ -54,3 +54,8 @@ INSERT INTO pokemons (nome, tipo_primario, tipo_secundario, porte, idade, temper
 ('Pikachu', 'eletrico', NULL, 'pequeno', 'Adulto (3 anos)', 'Curioso e carinhoso', 'Usina de Power Plant', 'disponivel', 'img/pikachu.png', 'Pikachu sorridente com bochechas vermelhas', 'Gosta de ficar nos ombros do tutor. Precisa de brinquedos para descarregar o excesso de eletricidade acumulada.'),
 ('Eevee', 'normal', NULL, 'pequeno', 'Filhote (8 meses)', 'Adaptável e muito dócil', 'Cidade de Celadon', 'disponivel', 'img/eevee.png', 'Eevee sentado olhando para frente', 'Muito carinhoso e interativo. Adapta-se facilmente a apartamentos e convivência com outros Pokémon.'),
 ('Snorlax', 'normal', NULL, 'grande', 'Adulto (6 anos)', 'Pacato e dorminhoco', 'Rota 12 (Bloqueando passagem)', 'disponivel', 'img/snorlax.png', 'Snorlax dormindo de barriga para cima', 'Necessita de um quintal espaçoso e rotina diária de alimentação supervisionada por nutricionista veterinário.');
+
+CREATE INDEX idx_adocoes_usuario ON adocoes(usuario_id);
+CREATE INDEX idx_adocoes_pokemon ON adocoes(pokemon_id);
+CREATE INDEX idx_adocoes_status ON adocoes(status);
+CREATE INDEX idx_pokemons_status ON pokemons(status);
